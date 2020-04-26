@@ -1,0 +1,10 @@
+{
+	"user": {
+		"user_status": "signedIn",
+		"first_name": "Em",
+		"email": "email@gmail.com",
+		"card": "11111111111"
+	},
+	"result": true,
+	"now": "04/15/2015 11:40:28"
+}
