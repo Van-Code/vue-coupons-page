@@ -6,5 +6,6 @@
 * lodash
 * vuetify
 * vuex
+* axios
 
 ![](screen.jpg)
