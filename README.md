@@ -7,4 +7,4 @@
 * vuetify
 * vuex
 
-![](screen.png)
+![](screen.jpg)
