@@ -184,6 +184,7 @@ import SortList from "@/views/components/SortList";
 import FiltersList from "@/views/components/FiltersList";
 import orderBy from "lodash/orderBy";
 import sortBy from "lodash/sortBy";
+
 export default {
   props: {
     options: { type: Object, required: true }

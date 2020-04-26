@@ -61,7 +61,7 @@
 <script>
 import EventBus from "@/libs/eventbus.js";
 import { couponMixin } from "@/mixins/coupons";
-import omit from "lodash";
+import omit from "lodash/omit";
 export default {
   props: {
     coupons: { type: Array, required: true },

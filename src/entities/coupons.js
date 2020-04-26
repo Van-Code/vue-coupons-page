@@ -1,14 +1,17 @@
 import axios from 'axios';
+import _ from 'lodash';
+
 export const Coupons = {
 	methods: {
 		url: function() {
-			return 'coupons/src/json/data.json';
+			return './json/data.json';
 		},
 		fetch: function(opts) {
 			let that = this;
 			axios
 				.get(this.url())
 				.then((response) => {
+					console.log(response);
 					if (response.data.result) {
 						let coupons = response.data.coupons;
 						coupons.forEach((cpn) => {

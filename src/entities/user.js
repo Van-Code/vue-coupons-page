@@ -3,8 +3,6 @@ export const UserMixins = {
 	data() {
 		return {
 			state: 0,
-			url: '/mypath/user',
-			authUrl: '/mypath/login',
 			clearUrl: '/mypath/clear',
 			user: {
 				checked: false,
@@ -19,11 +17,11 @@ export const UserMixins = {
 		userCheck: function(options) {
 			var that = this;
 			return new Promise(function(resolve, reject) {
-				that.url = 'coupons/src/json/user.json?';
+				const url = './json/user.json?';
 				if (that.$store.state.app.urlParam.loggedOut) {
-					that.url = 'coupons/src/json/user2.json?';
+					url = 'public/json/user2.json?';
 				}
-				axios.get(that.url).then((response) => {
+				axios.get(url).then((response) => {
 					let data = response.data.user;
 					Object.assign(data, {
 						checked: true,
@@ -46,7 +44,7 @@ export const UserMixins = {
 		logIn: function() {
 			var that = this;
 			axios
-				.get(that.authUrl, {
+				.get('public/json/true.json', {
 					params: {
 						targetPath: window.location.pathname + window.location.search
 					}

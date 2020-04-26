@@ -7,13 +7,13 @@
 </template>
 
 <script>
-import AppShell from '@/views/Shell';
-import EventBus from '@/libs/eventbus.js';
-import { UserMixins } from '@/entities/user';
-import { Coupons } from '@/entities/coupons';
+import AppShell from "@/views/Shell";
+import EventBus from "@/libs/eventbus.js";
+import { UserMixins } from "@/entities/user";
+import { Coupons } from "@/entities/coupons";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
     AppShell
   },
@@ -56,16 +56,16 @@ export default {
       //Build the appropriate set of tabs
       this.buildTabs(program);
       //Instantiate the main coupon collections
-      let scopes = ['browse'];
+      let scopes = ["browse"];
       if (this.loggedIn) {
         //add redeemed back in
         scopes = scopes.concat([
-          'active',
-          'redeemed',
-          'challenges',
-          'awardsawaiting',
-          'expired',
-          'unredeemed'
+          "active",
+          "redeemed",
+          "challenges",
+          "awardsawaiting",
+          "expired",
+          "unredeemed"
         ]);
       }
 
@@ -90,14 +90,14 @@ export default {
       //The most basic logged out set of tabs
       program.tabs = [
         {
-          link: 'browse',
-          name: 'All Offers',
-          scope: 'browse',
+          link: "browse",
+          name: "All Offers",
+          scope: "browse",
           subtabs: [
             {
-              link: 'browse',
-              name: 'All Offers',
-              scope: 'browse'
+              link: "browse",
+              name: "All Offers",
+              scope: "browse"
             }
           ]
         }
@@ -106,46 +106,46 @@ export default {
       //If the user is logged in, add the My Coupons tab and subtabs
       if (this.loggedIn) {
         program.tabs.push({
-          link: 'myactive',
-          name: 'My Offers',
-          scope: 'active',
+          link: "myactive",
+          name: "My Offers",
+          scope: "active",
           subtabs: [
             {
-              link: 'myactive',
-              name: 'My Offers',
-              scope: 'active'
+              link: "myactive",
+              name: "My Offers",
+              scope: "active"
             }
           ]
         });
         program.tabs.push({
-          link: 'myredeemed',
-          name: 'My History',
-          scope: 'redeemed',
+          link: "myredeemed",
+          name: "My History",
+          scope: "redeemed",
           subtabs: [
             {
-              link: 'myredeemed',
-              name: 'All Redeemed',
-              scope: 'redeemed'
+              link: "myredeemed",
+              name: "All Redeemed",
+              scope: "redeemed"
             },
             {
-              link: 'mychallenges',
-              name: 'Challenge Started',
-              scope: 'challenges'
+              link: "mychallenges",
+              name: "Challenge Started",
+              scope: "challenges"
             },
             {
-              link: 'myawardsawaiting',
-              name: 'Award Awaiting',
-              scope: 'awardsawaiting'
+              link: "myawardsawaiting",
+              name: "Award Awaiting",
+              scope: "awardsawaiting"
             },
             {
-              link: 'myexpired',
-              name: 'Expired',
-              scope: 'expired'
+              link: "myexpired",
+              name: "Expired",
+              scope: "expired"
             },
             {
-              link: 'myunredeemed',
-              name: 'Unredeemed Reward',
-              scope: 'unredeemed'
+              link: "myunredeemed",
+              name: "Unredeemed Reward",
+              scope: "unredeemed"
             }
           ]
         });
@@ -177,8 +177,8 @@ export default {
               var active = collection.filter(function(cpn) {
                 return (
                   cpn.status &&
-                  cpn.status.clipped === 'Y' &&
-                  cpn.status.rewards[0].fully_redeemed === 'N'
+                  cpn.status.clipped === "Y" &&
+                  cpn.status.rewards[0].fully_redeemed === "N"
                 );
               });
 
@@ -191,8 +191,8 @@ export default {
                 return (
                   cpn.clipped_coupons ||
                   (cpn.status &&
-                    cpn.status.clipped === 'Y' &&
-                    cpn.status.rewards[0].fully_redeemed === 'Y')
+                    cpn.status.clipped === "Y" &&
+                    cpn.status.rewards[0].fully_redeemed === "Y")
                 );
               });
 
@@ -239,11 +239,11 @@ export default {
         if (cpn.status) {
           var reward = cpn.status.rewards[0];
           return (
-            reward.progress.clipped === 'N' &&
-            cpn.status.clipped === 'Y' &&
+            reward.progress.clipped === "N" &&
+            cpn.status.clipped === "Y" &&
             reward.progress.balance === reward.progress.target &&
             reward.progress.balance != 0 &&
-            reward.coupon_id === ''
+            reward.coupon_id === ""
           );
         }
       });
@@ -262,8 +262,8 @@ export default {
       var unredeemed = activeRewards.filter(function(cpn) {
         if (cpn.status) {
           return (
-            cpn.status.rewards[0].coupon_id !== '' &&
-            cpn.status.rewards[0].progress.clipped === 'N'
+            cpn.status.rewards[0].coupon_id !== "" &&
+            cpn.status.rewards[0].progress.clipped === "N"
           );
         }
       });
@@ -278,7 +278,7 @@ export default {
           program.filters[scope] = {};
           let newlist = [];
           if (program.coupons[scope].length > 0) {
-            ['category', 'brand'].forEach(type => {
+            ["category", "brand"].forEach(type => {
               program.filters[scope][type] = [];
 
               program.coupons[scope].filter((cpn, i) => {
@@ -290,7 +290,7 @@ export default {
               });
               program.filters[scope][type] = _.uniqBy(
                 program.filters[scope][type],
-                'id'
+                "id"
               );
 
               program.filters[scope][type].sort(function(a, b) {

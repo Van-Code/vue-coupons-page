@@ -20,7 +20,7 @@
 		"@vue/cli-plugin-router": "^4.1.0",
 		"@vue/cli-plugin-vuex": "^4.1.0",
 		"@vue/cli-service": "^4.1.0",
-		"core-js": "^3.4.3",
+		"core-js": "^3.6.5",
 		"sass": "^1.23.7",
 		"sass-loader": "^8.0.2",
 		"vue-cli-plugin-vuetify": "^2.0.2",

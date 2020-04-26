@@ -29,8 +29,6 @@
   </div>
 </template>
 <script>
-import { find } from 'lodash';
-import invokeMap from 'lodash';
 export default {
   props: {
     options: { type: Object, required: true },
@@ -42,7 +40,7 @@ export default {
   },
   computed: {
     plural: function() {
-      return this.type === 'category' ? 'categories' : 'brands';
+      return this.type === "category" ? "categories" : "brands";
     },
     scope: function() {
       return this.$route.meta.scope;
@@ -57,13 +55,13 @@ export default {
       return name.charAt(0).toUpperCase() + name.slice(1);
     },
     emitFilter: function(name) {
-      this.$emit('updateFilters', name);
+      this.$emit("updateFilters", name);
     },
     clearFilters: function() {
       this.options.filters[this.scope][this.type].filter(itm => {
         itm.selected = false;
       });
-      this.$emit('updateFilters');
+      this.$emit("updateFilters");
     }
   }
 };
