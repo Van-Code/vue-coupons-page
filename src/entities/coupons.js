@@ -2,7 +2,7 @@ import axios from 'axios';
 export const Coupons = {
 	methods: {
 		url: function() {
-			return 'src/json/data.json';
+			return 'coupons/src/json/data.json';
 		},
 		fetch: function(opts) {
 			let that = this;

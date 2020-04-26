@@ -177,13 +177,13 @@
 </template>
 
 <script>
-import EventBus from '@/libs/eventbus.js';
-import CouponList from '@/views/components/CouponList.vue';
-import AppTabs from '@/views/components/Tabs';
-import SortList from '@/views/components/SortList';
-import FiltersList from '@/views/components/FiltersList';
-import orderBy from 'lodash-es/orderBy';
-import sortBy from 'lodash-es/sortBy';
+import EventBus from "@/libs/eventbus.js";
+import CouponList from "@/views/components/CouponList.vue";
+import AppTabs from "@/views/components/Tabs";
+import SortList from "@/views/components/SortList";
+import FiltersList from "@/views/components/FiltersList";
+import orderBy from "lodash/orderBy";
+import sortBy from "lodash/sortBy";
 export default {
   props: {
     options: { type: Object, required: true }
@@ -192,14 +192,14 @@ export default {
   data() {
     let ddl = [];
     if (this.$store.getters.isLoggedIn) {
-      ddl = _.find(this.options.tabs, { scope: 'redeemed' }).subtabs;
+      ddl = _.find(this.options.tabs, { scope: "redeemed" }).subtabs;
     }
     let redeemType =
       ddl.length > 0
-        ? ddl[0].scope.replace('awardsa', 'awards a')
+        ? ddl[0].scope.replace("awardsa", "awards a")
         : this.$route.meta.scope;
     return {
-      sortKey: '',
+      sortKey: "",
       couponsToShow: [],
       historyScopes: ddl,
       showMobileFilters: false,
@@ -207,7 +207,7 @@ export default {
     };
   },
   watch: {
-    '$route.meta.scope': function(val, oldval) {
+    "$route.meta.scope": function(val, oldval) {
       this.filterCoupons();
     }
   },
@@ -220,7 +220,7 @@ export default {
     },
     isHistoryScope: function() {
       return (
-        this.$store.getters.isLoggedIn && this.$route.meta.scope === 'redeemed'
+        this.$store.getters.isLoggedIn && this.$route.meta.scope === "redeemed"
       );
     }
   },
@@ -237,7 +237,7 @@ export default {
         if (sortKey) {
           cpns = this.couponsToShow;
         }
-        ['category', 'brand'].forEach(type => {
+        ["category", "brand"].forEach(type => {
           this.options.filters[this.scope][type].forEach(filter => {
             if (filter.selected) {
               cpns.filter(cpn => {
@@ -257,13 +257,13 @@ export default {
       this.sortCoupons(sortKey, this.collection);
     },
     sortCoupons: function(e, collection) {
-      const SORTKEY = e ? e.target.value : '';
+      const SORTKEY = e ? e.target.value : "";
       let sorted = [];
       switch (SORTKEY) {
-        case 'Relevance':
-          sorted = sortBy(collection, ['relevance_order']);
+        case "Relevance":
+          sorted = sortBy(collection, ["relevance_order"]);
           break;
-        case 'Expiration':
+        case "Expiration":
           sorted = sortBy(
             collection,
             [
@@ -271,10 +271,10 @@ export default {
                 return new Date(a.expiration_date), a.coupon_id;
               }
             ],
-            ['requirement_description']
+            ["requirement_description"]
           );
           break;
-        case 'Value':
+        case "Value":
           sorted = sortBy(
             collection,
             [
@@ -282,10 +282,10 @@ export default {
                 return -parseFloat(a.value);
               }
             ],
-            ['requirement_description']
+            ["requirement_description"]
           );
           break;
-        case 'Category':
+        case "Category":
           sorted = sortBy(
             collection,
             [
@@ -293,22 +293,22 @@ export default {
                 return cpn.category;
               }
             ],
-            'requirement_description'
+            "requirement_description"
           );
           break;
         default:
           //Most Recent is default
           sorted = orderBy(
             collection,
-            ['display_start_date'],
-            ['requirement_description']
+            ["display_start_date"],
+            ["requirement_description"]
           );
           break;
       }
       Object.assign(this, { couponsToShow: sorted });
     },
     toggleCheckbox: function(name) {
-      ['category', 'brand'].forEach(type => {
+      ["category", "brand"].forEach(type => {
         this.options.filters[this.scope][type].forEach(filter => {
           if (filter.id === name) {
             filter.selected = !filter.selected;

@@ -19,9 +19,9 @@ export const UserMixins = {
 		userCheck: function(options) {
 			var that = this;
 			return new Promise(function(resolve, reject) {
-				that.url = 'src/json/user.json?';
+				that.url = 'coupons/src/json/user.json?';
 				if (that.$store.state.app.urlParam.loggedOut) {
-					that.url = 'src/json/user2.json?';
+					that.url = 'coupons/src/json/user2.json?';
 				}
 				axios.get(that.url).then((response) => {
 					let data = response.data.user;

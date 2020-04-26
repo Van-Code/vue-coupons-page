@@ -59,9 +59,9 @@
   </div>
 </template>
 <script>
-import EventBus from '@/libs/eventbus.js';
-import { couponMixin } from '@/mixins/coupons';
-import omit from 'lodash-es/omit';
+import EventBus from "@/libs/eventbus.js";
+import { couponMixin } from "@/mixins/coupons";
+import omit from "lodash";
 export default {
   props: {
     coupons: { type: Array, required: true },
@@ -71,15 +71,15 @@ export default {
   mixins: [couponMixin],
   data() {
     var title = this.model.requirement,
-      unlimited_text = 'Unlimited Use',
+      unlimited_text = "Unlimited Use",
       shortalt = this.model.requirement
-        .replace('<strong>', ' ')
-        .replace('</strong>', ''),
-      display_description = this.model.requirement || '';
+        .replace("<strong>", " ")
+        .replace("</strong>", ""),
+      display_description = this.model.requirement || "";
     display_description = display_description
-      .replace('$.', '$0.')
-      .replace(/®/g, '&reg;')
-      .replace(/&reg;/g, '<sup>&reg;</sup>');
+      .replace("$.", "$0.")
+      .replace(/®/g, "&reg;")
+      .replace(/&reg;/g, "<sup>&reg;</sup>");
     return {
       //Get the placement of the view, for tracking purposes
       doRender: this.options.doRender,
@@ -94,7 +94,7 @@ export default {
       imgSrc: this.model.image_uri,
       cta: this.getCta(),
       dialog: false,
-      error: ''
+      error: ""
     };
   },
   computed: {
@@ -105,7 +105,7 @@ export default {
       return parseInt(this.model.status.rewards[0].progress.target);
     },
     balance: function() {
-      return this.model.status.rewards[0].progress.balance !== ''
+      return this.model.status.rewards[0].progress.balance !== ""
         ? parseInt(this.model.status.rewards[0].progress.balance)
         : 0;
     }
@@ -116,50 +116,50 @@ export default {
         user = this.$store.state.app.user,
         btnClass = that.options.btnClass,
         cta = {
-          el: 'a',
-          class: btnClass + ' primary ',
-          aria: 'polite'
+          el: "a",
+          class: btnClass + " primary ",
+          aria: "polite"
         };
 
       switch (user.state) {
         case 0:
-          cta.class = btnClass + ' primary';
-          cta.content = '<strong>Login to Save</strong>';
+          cta.class = btnClass + " primary";
+          cta.content = "<strong>Login to Save</strong>";
           cta.href = user.links.login;
           break;
         case 2:
-          cta.class = 'primary';
+          cta.class = "primary";
           cta.content = this.model.status
-            ? 'Start the Savings'
-            : 'Load to Card';
-          cta.href = '#';
+            ? "Start the Savings"
+            : "Load to Card";
+          cta.href = "#";
       }
       return cta;
     },
     getCta: function() {
       var that = this,
         cta = {};
-      cta.href = '#';
+      cta.href = "#";
       //From standard get coupon APIs
       switch (this.$route.meta.scope) {
-        case 'redeemed':
-          cta.content = '<strong>Redeemed</strong>';
+        case "redeemed":
+          cta.content = "<strong>Redeemed</strong>";
           break;
-        case 'challenges':
-        case 'awardsawaiting':
-        case 'unredeemed':
-        case 'active':
+        case "challenges":
+        case "awardsawaiting":
+        case "unredeemed":
+        case "active":
           //continuity threshold
           if (that.model.status) {
             var target = parseInt(that.model.status.rewards[0].progress.target);
             //threshold met
             var balance =
               parseInt(that.model.status.rewards[0].progress.balance) || 0;
-            cta.el = 'el';
+            cta.el = "el";
             if (balance >= 0 && balance < target) {
               cta.disabled = true;
               cta.text = true;
-              cta.content = 'Savings Started';
+              cta.content = "Savings Started";
             }
             if (balance === target) {
               var reward_clip_status =
@@ -167,27 +167,27 @@ export default {
               var achieved_status =
                 that.model.status.rewards[0].progress.achieved;
               //has met criteria
-              if (achieved_status === 'N') {
+              if (achieved_status === "N") {
                 cta.text = true;
                 cta.disabled = true;
-                cta.content = 'Awaiting Award';
+                cta.content = "Awaiting Award";
                 //has not loaded reward yet
-              } else if (reward_clip_status === 'N') {
-                cta.class += ' primary';
-                cta.content = 'Load to Card';
+              } else if (reward_clip_status === "N") {
+                cta.class += " primary";
+                cta.content = "Load to Card";
               }
             }
           } else {
             //reward offer
-            cta.el = 'a';
+            cta.el = "a";
             cta.disabled = true;
             cta.text = true;
 
-            cta.content = 'Coupon Loaded';
+            cta.content = "Coupon Loaded";
           }
           break;
-        case 'expired':
-          cta.content = 'Expired';
+        case "expired":
+          cta.content = "Expired";
           break;
         default:
           cta = that.getAvailableCpnCta();
@@ -196,13 +196,13 @@ export default {
     },
 
     getProgress: function() {
-      var content = '';
-      var classes = 'circle';
+      var content = "";
+      var classes = "circle";
       if (this.model.status) {
         var target = this.model.status.rewards[0].progress.target;
         //threshold met
         var balance =
-          this.model.status.rewards[0].progress.balance !== ''
+          this.model.status.rewards[0].progress.balance !== ""
             ? this.model.status.rewards[0].progress.balance
             : 0;
         if (balance === target) {
@@ -212,21 +212,21 @@ export default {
           content +=
             '<div class="left">Progress</div><div class="right">' +
             balance +
-            '/' +
+            "/" +
             target +
-            '</div>';
-          content += '</div>';
+            "</div>";
+          content += "</div>";
 
           content += '<div class="content-circle">';
 
           for (var i = 0; i < target; i++) {
-            var classes = 'circle';
+            var classes = "circle";
             if (i < balance) {
-              classes = 'circle active';
+              classes = "circle active";
             }
             content += '<div class="' + classes + '"></div>';
           }
-          content += '</div>';
+          content += "</div>";
         }
       }
       return content;
@@ -234,11 +234,11 @@ export default {
     getExpirationText: function() {
       var status = true;
       var expiration_date = this.model.display_end_date,
-        prefix = 'Complete By: ';
+        prefix = "Complete By: ";
       if (status) {
-        prefix = 'Available Until: ';
+        prefix = "Available Until: ";
       } else {
-        prefix = 'Load by: ';
+        prefix = "Load by: ";
       }
 
       return prefix + expiration_date;
@@ -255,7 +255,7 @@ export default {
       var that = this;
       var $btn = e.target;
       //show loading and add clickpath for omniture
-      e.target.className += ' loading';
+      e.target.className += " loading";
       this.clip({
         data: {
           id: that.model.coupon_id
@@ -265,7 +265,7 @@ export default {
           that.removeFromScope(that.model);
         },
         error: function(response, json) {
-          e.target.className.replace('loading', '');
+          e.target.className.replace("loading", "");
           that.error = json.messages[0];
           that.dialog = true;
         }
@@ -282,11 +282,11 @@ export default {
           ? short
           : 25;
       if (reqdesc.length > charLength) {
-        reqdesc = reqdesc.replace(/<br ?\/?>/, '|');
-        reqdesc = reqdesc.replace('|', '<br>');
-        reqdesc = reqdesc.replace(/®/g, '<sup>&reg;</sup>');
+        reqdesc = reqdesc.replace(/<br ?\/?>/, "|");
+        reqdesc = reqdesc.replace("|", "<br>");
+        reqdesc = reqdesc.replace(/®/g, "<sup>&reg;</sup>");
       } else {
-        reqdesc = reqdesc.replace(/&reg;/g, '<sup>&reg;</sup>');
+        reqdesc = reqdesc.replace(/&reg;/g, "<sup>&reg;</sup>");
       }
       return reqdesc;
     },
@@ -294,28 +294,28 @@ export default {
       let that = this;
       this.model.clipped_coupons = true;
       //clipping from browse scope
-      if (this.scope === 'browse') {
+      if (this.scope === "browse") {
         //is continuity offer
         if (this.model.status) {
-          var copy = 'Savings Started';
+          var copy = "Savings Started";
         } else {
-          var copy = 'Loaded to Card';
+          var copy = "Loaded to Card";
         }
         // e.target.className.replace('loading', '');
 
-        this.cta.class = 'black--text';
+        this.cta.class = "black--text";
         this.cta.text = true;
         this.cta.disabled = true;
-        this.cta.content = '<span class="cta_muted">' + copy + '</span>';
+        this.cta.content = '<span class="cta_muted">' + copy + "</span>";
 
         _.omit(this.options.coupons.browse, this.model);
         this.options.coupons.active.unshift(this.model);
       } else {
-        this.cta.el = 'a';
-        this.cta.class = 'black--text';
+        this.cta.el = "a";
+        this.cta.class = "black--text";
         this.cta.text = true;
         this.cta.disabled = true;
-        this.cta.content = 'Coupon Loaded';
+        this.cta.content = "Coupon Loaded";
         this.options.coupons.redeemed.unshift(this.model);
       }
     }
