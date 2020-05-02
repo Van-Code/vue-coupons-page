@@ -2,7 +2,7 @@ import axios from 'axios';
 export const couponMixin = {
 	methods: {
 		getUrl: function() {
-			return 'src/json/true.json?';
+			return './json/true.json?';
 		},
 		clip: function(options) {
 			var that = this;
