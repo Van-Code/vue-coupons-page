@@ -162,6 +162,7 @@ import CouponList from "@/views/components/CouponList.vue";
 import AppTabs from "@/views/components/Tabs";
 import SortList from "@/views/components/SortList";
 import FiltersList from "@/views/components/FiltersList";
+import { SCOPES, SORT_OPTIONS } from "@/constants";
 import { orderBy, sortBy, find } from "lodash";
 
 export default {
@@ -196,14 +197,15 @@ export default {
   },
   computed: {
     isMobile() {
-      return this.$store.getters.isMobile;
+      return this.$vuetify.breakpoint.smAndDown;
     },
     scope() {
-      return this.$route.meta.scope || "browse";
+      return this.$route.meta.scope || SCOPES.BROWSE;
     },
     isHistoryScope() {
       return (
-        this.$store.getters.isLoggedIn && this.$route.meta.scope === "redeemed"
+        this.$store.getters.isLoggedIn &&
+        this.$route.meta.scope === SCOPES.REDEEMED
       );
     }
   },
@@ -240,16 +242,16 @@ export default {
       let sorted = [];
 
       switch (SORTKEY) {
-        case "Relevance":
+        case SORT_OPTIONS.RELEVANCE:
           sorted = sortBy(collection, ["relevance_order"]);
           break;
-        case "Expiration":
+        case SORT_OPTIONS.EXPIRATION:
           sorted = sortBy(collection, [(a) => new Date(a.expiration_date)]);
           break;
-        case "Value":
+        case SORT_OPTIONS.VALUE:
           sorted = sortBy(collection, [(a) => -parseFloat(a.value)]);
           break;
-        case "Category":
+        case SORT_OPTIONS.CATEGORY:
           sorted = sortBy(collection, [(cpn) => cpn.category]);
           break;
         default:

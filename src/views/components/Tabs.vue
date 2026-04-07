@@ -1,6 +1,6 @@
 <template>
   <div class="row mb-4">
-    <v-tabs v-if="$store.state.app.responsive.current === 2" align-with-title height="auto">
+    <v-tabs v-if="$vuetify.breakpoint.mdAndUp" align-with-title height="auto">
       <div
         role="presentation"
         v-for="(x, i) in options.tabs"
@@ -40,7 +40,7 @@ export default {
       return this.$route.meta.scope;
     },
     isMobile() {
-      return this.$store.getters.isMobile;
+      return this.$vuetify.breakpoint.smAndDown;
     },
     mobileTabs() {
       return this.$route.meta.scope !== "browse"

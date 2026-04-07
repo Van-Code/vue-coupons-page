@@ -65,7 +65,7 @@ export default {
   },
   computed: {
     isMobile() {
-      return this.$store.getters.isMobile;
+      return this.$vuetify.breakpoint.smAndDown;
     }
   },
   methods: {

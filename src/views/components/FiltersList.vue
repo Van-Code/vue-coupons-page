@@ -5,7 +5,7 @@
       <div class="py-2">
         <h5 class="sidebar-header">{{ toUpperCase(plural) }}</h5>
         <div
-          :class="{ 'categories-container': $store.state.app.responsive.current < 2, 'custom_checkboxes all_categories': true }"
+          :class="{ 'categories-container': $vuetify.breakpoint.smAndDown, 'custom_checkboxes all_categories': true }"
           v-if="coupons.length > 0"
         >
           <div role="checkbox" v-for="(model, i) in options.filters[scope][type]" :key="i">

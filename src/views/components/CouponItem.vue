@@ -62,6 +62,7 @@
 
 <script>
 import { couponMixin } from "@/mixins/coupons";
+import { USER_STATES, SCOPES } from "@/constants";
 
 export default {
   props: {
@@ -114,17 +115,17 @@ export default {
       const cta = { el: "a", href: "#", aria: "polite" };
 
       switch (user.state) {
-        case 0:
+        case USER_STATES.LOGGED_OUT:
           cta.class = btnClass + " primary";
           cta.content = "<strong>Login to Save</strong>";
           cta.href = user.links ? user.links.login : "#";
           break;
-        case 1:
+        case USER_STATES.SIGNED_IN_NO_CARD:
           cta.class = btnClass + " primary";
           cta.content = "<strong>Add Card to Save</strong>";
           cta.href = user.links ? user.links.login : "#";
           break;
-        case 2:
+        case USER_STATES.SIGNED_IN_WITH_CARD:
           cta.class = "primary";
           cta.content = this.model.status ? "Start the Savings" : "Load to Card";
           cta.href = "#";
@@ -194,7 +195,7 @@ export default {
 
     onButtonClicked() {
       const user = this.$store.state.app.user;
-      if (user.state > 1) {
+      if (user.state === USER_STATES.SIGNED_IN_WITH_CARD) {
         this.clipCoupon();
       }
     },
@@ -216,8 +217,8 @@ export default {
 
     getReqdesc(long, short) {
       let reqdesc = this.model.description;
-      const responsive = this.$store.state.app.responsive.current;
-      const charLength = responsive === 2 ? long : responsive === 1 ? short : 25;
+      const bp = this.$vuetify.breakpoint;
+      const charLength = bp.mdAndUp ? long : bp.smOnly ? short : 25;
 
       if (reqdesc.length > charLength) {
         reqdesc = reqdesc.replace(/<br ?\/?>/, "|");
@@ -230,7 +231,7 @@ export default {
     },
 
     removeFromScope() {
-      if (this.scope === "browse") {
+      if (this.scope === SCOPES.BROWSE) {
         const copy = this.model.status ? "Savings Started" : "Loaded to Card";
 
         this.cta.class = "black--text";

@@ -1,15 +1,13 @@
 import axios from 'axios';
+import { USER_STATES } from '@/constants';
 
 export const UserMixins = {
 	data() {
 		return {
-			state: 0,
-			url: '/mypath/user',
 			authUrl: '/mypath/login',
-			clearUrl: '/mypath/clear',
 			user: {
 				checked: false,
-				state: 0
+				state: USER_STATES.LOGGED_OUT
 			}
 		};
 	},
@@ -17,61 +15,49 @@ export const UserMixins = {
 		this.getLinks();
 	},
 	methods: {
-		userCheck: function() {
-			const that = this;
-			return new Promise(function(resolve) {
-				// Use loggedOut param to simulate a logged-out user for demo purposes
-				that.url = that.$store.state.app.urlParam.loggedOut
+		userCheck() {
+			return new Promise((resolve) => {
+				// Use ?loggedOut query param to simulate a logged-out user for demo
+				const params = new URLSearchParams(window.location.search);
+				const url = params.get('loggedOut')
 					? 'public/json/user2.json'
 					: 'public/json/user.json';
 
-				axios.get(that.url).then((response) => {
+				axios.get(url).then((response) => {
 					const data = response.data.user;
-					Object.assign(data, {
-						checked: true,
-						now: new Date(data.now)
-					});
+					Object.assign(data, { checked: true, now: new Date(data.now) });
 
 					if (data.user_status === 'notSignedIn') {
-						data.state = 0;
+						data.state = USER_STATES.LOGGED_OUT;
 					} else if (data.user_status === 'signedIn' && data.card !== '') {
-						data.state = 2;
+						data.state = USER_STATES.SIGNED_IN_WITH_CARD;
 					} else {
-						data.state = 1;
+						data.state = USER_STATES.SIGNED_IN_NO_CARD;
 					}
 
-					that.user = data;
-					that.$store.commit('userData', that.user);
+					this.user = data;
+					this.$store.commit('userData', this.user);
 					resolve();
 				});
 			});
 		},
-		logIn: function() {
-			const that = this;
-			axios
-				.get(that.authUrl, {
-					params: {
-						targetPath: window.location.pathname + window.location.search
-					}
-				})
-				.then((data) => {
-					if (data.responseText) {
-						console.error('Login error');
-					} else {
-						that.state = 2;
-						location.reload();
-					}
-				});
+
+		logIn() {
+			const targetPath = window.location.pathname + window.location.search;
+			axios.get(this.authUrl, { params: { targetPath } }).then((data) => {
+				if (data.responseText) {
+					console.error('Login error');
+				} else {
+					location.reload();
+				}
+			});
 		},
-		getLinks: function() {
-			const links = {
-				login:
-					window.location.origin +
-					'/login?targetPath=' +
-					window.location.pathname +
-					window.location.search
-			};
-			this.$store.commit('userData', { links: links });
+
+		getLinks() {
+			const targetPath = window.location.pathname + window.location.search;
+			this.$store.commit('userData', {
+				links: { login: `${window.location.origin}/login?targetPath=${targetPath}` }
+			});
 		}
 	}
 };
