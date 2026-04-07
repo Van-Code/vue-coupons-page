@@ -1,27 +1,32 @@
 <template>
-  <div class="row mb-4">
-    <v-tabs v-if="$vuetify.breakpoint.mdAndUp" align-with-title height="auto">
-      <div
-        role="presentation"
-        v-for="(x, i) in options.tabs"
+  <div class="tab-bar">
+    <!-- Desktop: Vuetify tabs -->
+    <v-tabs v-if="$vuetify.breakpoint.mdAndUp" background-color="transparent" height="48">
+      <v-tab
+        v-for="(tab, i) in options.tabs"
         :key="i"
-        :class="{ active: scope === x.scope }"
+        :to="tab.link === 'browse' ? '/' : `/${tab.link}`"
+        :class="{ 'v-tab--active': scope === tab.scope }"
+        exact
       >
-        <v-tab class="py-2" :to="x.link === 'browse' ? '/' : x.link">{{ x.name }}</v-tab>
-      </div>
+        {{ tab.name }}
+      </v-tab>
     </v-tabs>
 
-    <!-- mobile -->
-    <div v-else>
-      <select @change="updateRoute" v-model="currentTab">
-        <option
-          v-for="(x, i) in mobileTabs"
-          :key="i"
-          :value="x.link"
-          :class="{ active: scope === x.scope }"
-        >{{ x.name }}</option>
-      </select>
-    </div>
+    <!-- Mobile: native select -->
+    <select
+      v-else
+      class="tab-select"
+      @change="updateRoute"
+      v-model="currentTab"
+      aria-label="Navigate sections"
+    >
+      <option
+        v-for="(tab, i) in mobileTabs"
+        :key="i"
+        :value="tab.link"
+      >{{ tab.name }}</option>
+    </select>
   </div>
 </template>
 
@@ -31,16 +36,11 @@ export default {
     options: { type: Object, required: true }
   },
   data() {
-    return {
-      currentTab: ""
-    };
+    return { currentTab: "" };
   },
   computed: {
     scope() {
       return this.$route.meta.scope;
-    },
-    isMobile() {
-      return this.$vuetify.breakpoint.smAndDown;
     },
     mobileTabs() {
       return this.$route.meta.scope !== "browse"
@@ -53,17 +53,38 @@ export default {
   },
   methods: {
     updateRoute(e) {
-      this.$router.push(`/${e.target.value}`);
+      const link = e.target.value;
+      this.$router.push(link === "browse" ? "/" : `/${link}`);
     },
     findSelected() {
-      let found = this.mobileTabs.find(
-        (tab) => tab.scope === this.$route.meta.scope
-      );
-      if (!found) {
-        found = this.mobileTabs[0];
-      }
+      const found =
+        this.mobileTabs.find((tab) => tab.scope === this.$route.meta.scope) ||
+        this.mobileTabs[0];
       this.currentTab = found.link;
     }
   }
 };
 </script>
+
+<style scoped lang="scss">
+.tab-bar {
+  margin-bottom: 0;
+}
+
+.tab-select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--color-surface);
+  appearance: menulist;
+
+  &:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 1px;
+  }
+}
+</style>

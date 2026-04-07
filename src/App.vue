@@ -1,7 +1,11 @@
 <template>
   <div>
     <v-app class="my-app container">
-      <app-shell :options="options" v-if="!isLoading"></app-shell>
+      <div v-if="isLoading" class="app-loading">
+        <v-progress-circular indeterminate color="primary" size="48" width="3" />
+        <span>Loading offers&hellip;</span>
+      </div>
+      <app-shell v-else :options="options"></app-shell>
     </v-app>
   </div>
 </template>
@@ -10,7 +14,7 @@
 import AppShell from "@/views/Shell";
 import { UserMixins } from "@/entities/user";
 import { Coupons } from "@/entities/coupons";
-import { SCOPES, USER_STATES } from "@/constants";
+import { SCOPES } from "@/constants";
 import { uniqBy } from "lodash";
 
 export default {
@@ -95,11 +99,11 @@ export default {
           name: "My History",
           scope: SCOPES.REDEEMED,
           subtabs: [
-            { link: "myredeemed",      name: "All Redeemed",      scope: SCOPES.REDEEMED },
-            { link: "mychallenges",    name: "Challenge Started",  scope: SCOPES.CHALLENGES },
-            { link: "myawardsawaiting",name: "Award Awaiting",     scope: SCOPES.AWARDS_AWAITING },
-            { link: "myexpired",       name: "Expired",            scope: SCOPES.EXPIRED },
-            { link: "myunredeemed",    name: "Unredeemed Reward",  scope: SCOPES.UNREDEEMED }
+            { link: "myredeemed",       name: "All Redeemed",     scope: SCOPES.REDEEMED },
+            { link: "mychallenges",     name: "Challenge Started", scope: SCOPES.CHALLENGES },
+            { link: "myawardsawaiting", name: "Award Awaiting",   scope: SCOPES.AWARDS_AWAITING },
+            { link: "myexpired",        name: "Expired",          scope: SCOPES.EXPIRED },
+            { link: "myunredeemed",     name: "Unredeemed Reward",scope: SCOPES.UNREDEEMED }
           ]
         });
       }
@@ -179,7 +183,9 @@ export default {
         program.coupons[SCOPES.AWARDS_AWAITING].push(awardsawaiting[0]);
       }
 
-      const expired = collection.filter((cpn) => new Date() > new Date(cpn.display_end_date));
+      const expired = collection.filter(
+        (cpn) => new Date() > new Date(cpn.display_end_date)
+      );
       if (expired.length > 0) {
         program.coupons[SCOPES.EXPIRED].push(expired[0]);
       }
@@ -220,18 +226,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss">
-#app.theme--light.v-application {
-  background-color: #fff;
-}
-html {
-  -webkit-font-smoothing: auto;
-  font-family: "Source Sans Pro", sans-serif;
-}
-.coupon-app select {
-  -webkit-appearance: menulist;
-  -moz-appearance: menulist;
-  appearance: menulist;
-}
-</style>

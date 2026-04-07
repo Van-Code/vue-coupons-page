@@ -1,51 +1,71 @@
 <template>
-  <div id="sortby" aria-hidden="true" class="row col-sm-9 pt-0 pb-0">
-    <select
-      class="col-md-2 offset-md-5"
-      aria-label="Sort by"
-      @change="emitSortType"
+  <div class="sort-bar">
+    <label class="sort-bar__label" for="sort-select">Sort</label>
+    <v-select
+      id="sort-select"
       v-model="sortModel"
-      v-if="!isMobile || (isMobile && coupons.length > 0)"
-    >
-      <option
-        :data-option="type"
-        class="col-md-7"
-        tabindex="0"
-        role="menuitem"
-        :label="type.replace('_', ' ')"
-        :value="type.replace('_', ' ')"
-        v-for="type in sortOpts"
-        :key="type"
-      >{{ type.replace('_', ' ') }}</option>
-    </select>
+      :items="sortOptItems"
+      item-text="label"
+      item-value="value"
+      dense
+      outlined
+      hide-details
+      class="sort-bar__select"
+      @change="emitSortValue"
+    ></v-select>
 
-    <div class="row col-md-5 align-center" v-if="!isMobile">
+    <div class="sort-bar__search" v-if="!isMobile">
       <v-autocomplete
         v-model="searchBox"
-        placeholder="Enter Your Search..."
+        placeholder="Search offers…"
         :items="autocompleteList"
         :search-input.sync="search"
         hide-no-data
         hide-selected
+        hide-details
+        dense
+        outlined
+        clearable
+        class="sort-bar__autocomplete"
         append-icon=""
       />
-      <v-btn class="ml-2" @click.prevent="emitFilter">Search</v-btn>
+      <v-btn
+        depressed
+        color="primary"
+        class="white--text sort-bar__search-btn"
+        @click.prevent="emitFilter"
+      >
+        Search
+      </v-btn>
     </div>
   </div>
 </template>
 
 <script>
+import { SORT_OPTIONS } from "@/constants";
+
 export default {
   props: {
     options: { type: Object, required: true },
     coupons: { type: Array, required: true }
   },
   data() {
-    const sortOpts = this.$store.getters.isLoggedIn
-      ? ["Relevance", "Most_Recent", "Expiration", "Value", "Category"]
-      : ["Most_Recent", "Expiration", "Value", "Category"];
+    const opts = this.$store.getters.isLoggedIn
+      ? [
+          SORT_OPTIONS.RELEVANCE,
+          SORT_OPTIONS.MOST_RECENT,
+          SORT_OPTIONS.EXPIRATION,
+          SORT_OPTIONS.VALUE,
+          SORT_OPTIONS.CATEGORY
+        ]
+      : [
+          SORT_OPTIONS.MOST_RECENT,
+          SORT_OPTIONS.EXPIRATION,
+          SORT_OPTIONS.VALUE,
+          SORT_OPTIONS.CATEGORY
+        ];
 
-    // Build autocomplete list once from the initial coupon set
+    // Build autocomplete list once from initial coupon set
     const autocomplete = [];
     this.coupons.forEach((cpn) => {
       ["category", "brand"].forEach((type) => {
@@ -56,8 +76,8 @@ export default {
     });
 
     return {
-      sortOpts,
-      sortModel: sortOpts[0].replace("_", " "),
+      sortOpts: opts,
+      sortModel: opts[0],
       autocompleteList: autocomplete,
       search: null,
       searchBox: null
@@ -66,11 +86,17 @@ export default {
   computed: {
     isMobile() {
       return this.$vuetify.breakpoint.smAndDown;
+    },
+    sortOptItems() {
+      return this.sortOpts.map((key) => ({
+        value: key,
+        label: key.replace("_", " ")
+      }));
     }
   },
   methods: {
-    emitSortType(model) {
-      this.$emit("updateSort", model);
+    emitSortValue(value) {
+      this.$emit("updateSort", value);
     },
     emitFilter() {
       this.$emit("updateFilters", this.searchBox);
@@ -79,5 +105,39 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
+.sort-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sort-bar__label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.sort-bar__select {
+  width: 160px;
+  flex-shrink: 0;
+}
+
+.sort-bar__search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sort-bar__autocomplete {
+  width: 200px;
+}
+
+.sort-bar__search-btn {
+  height: 40px !important;
+  font-size: 0.8125rem !important;
+}
 </style>

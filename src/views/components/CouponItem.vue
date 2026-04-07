@@ -1,59 +1,77 @@
 <template>
-  <div class="col col-xs-6 col-sm-4 col-md-3" :data-id="model.coupon_id" :key="model.coupon_id">
-    <v-card class="coupon-item">
-      <v-img :src="imgSrc" :alt="shortdesc" class="ma-6" />
-
-      <div>
-        <v-card-title v-if="titletxt">
-          <span class="screen-reader-only">{{ shortalt }}</span>
-          {{ titletxt }}
-        </v-card-title>
-
-        <v-card-subtitle>
-          <div class="reward-progress" v-if="model.status && scope === 'active'">
-            <div class="red--text" :class="{ hidden: balance !== target }">Reward criteria met</div>
-            <div class="content-text">
-              <div class="left">Progress</div>
-              <div class="right">{{ balance }} / {{ target }}</div>
-            </div>
-            <div class="content-circle">
-              <div class="circle" :class="{ active: i < balance }" v-for="(c, i) in target" :key="i"></div>
-            </div>
-          </div>
-          <div v-html="reqdesc_summary"></div>
-        </v-card-subtitle>
-
-        <v-card-text>{{ expirationText }}</v-card-text>
+  <div class="coupon-col col col-xs-6 col-sm-4 col-md-3" :data-id="model.coupon_id">
+    <v-card class="coupon-card" elevation="0">
+      <!-- Product Image -->
+      <div class="coupon-card__image">
+        <v-img :src="imgSrc" :alt="shortdesc" contain height="150" />
       </div>
 
-      <hr />
+      <div class="coupon-card__body">
+        <!-- Title -->
+        <p class="coupon-card__title" :title="titletxt">
+          <span class="screen-reader-only">{{ shortalt }}</span>
+          {{ titletxt }}
+        </p>
 
-      <v-card-actions>
+        <!-- Progress (active continuity coupons only) -->
+        <div class="reward-progress" v-if="model.status && scope === 'active'">
+          <div class="progress-met" v-if="balance === target">&#10003; Reward criteria met</div>
+          <template v-else>
+            <div class="progress-label">
+              <span>Progress</span>
+              <span>{{ balance }} / {{ target }}</span>
+            </div>
+            <div class="progress-pips">
+              <span
+                class="pip"
+                :class="{ 'pip--filled': i < balance }"
+                v-for="(c, i) in target"
+                :key="i"
+              ></span>
+            </div>
+          </template>
+        </div>
+
+        <!-- Description -->
+        <p class="coupon-card__desc" v-html="reqdesc_summary"></p>
+
+        <!-- Expiration -->
+        <p class="coupon-card__expires">{{ expirationText }}</p>
+      </div>
+
+      <!-- CTA -->
+      <v-card-actions class="coupon-card__actions">
         <v-btn
           block
+          depressed
           v-if="cta.el"
-          role="link"
           :text="cta.text"
           :href="cta.href"
-          :class="cta.class"
-          v-html="cta.content"
+          :class="['coupon-card__cta', cta.class]"
           :disabled="cta.disabled"
+          v-html="cta.content"
           @click.prevent="onButtonClicked"
         ></v-btn>
-        <span v-else :class="cta.class" v-html="cta.content"></span>
+        <span v-else :class="['coupon-card__cta-label', cta.class]" v-html="cta.content"></span>
       </v-card-actions>
     </v-card>
 
-    <v-dialog v-model="dialog" width="500">
+    <!-- Error dialog -->
+    <v-dialog v-model="dialog" width="460">
       <v-card>
-        <v-card-title>
-          <h3>Error</h3>
-          <div class="spacer"></div>
-          <v-btn text class="title-bar-close" @click="dialog = false"></v-btn>
+        <v-card-title class="error-dialog__title">
+          <span>Something went wrong</span>
+          <v-spacer />
+          <v-btn icon small @click="dialog = false">
+            <span aria-label="Close">&times;</span>
+          </v-btn>
         </v-card-title>
-        <v-card-text>{{ error }}</v-card-text>
-        <v-card-actions>
-          <v-btn color="primary" class="white--text" @click="dialog = false">Close</v-btn>
+        <v-card-text class="error-dialog__body">{{ error }}</v-card-text>
+        <v-card-actions class="error-dialog__actions">
+          <v-spacer />
+          <v-btn depressed color="primary" class="white--text" @click="dialog = false">
+            Dismiss
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -85,7 +103,7 @@ export default {
     return {
       titletxt: title,
       shortdesc: display_description,
-      shortalt: shortalt,
+      shortalt,
       reqdesc_summary: this.getReqdesc(60, 40),
       expirationText: this.getExpirationText(),
       imgSrc: this.model.image_uri,
@@ -111,23 +129,22 @@ export default {
   methods: {
     getAvailableCpnCta() {
       const user = this.$store.state.app.user;
-      const btnClass = this.options.btnClass || "";
       const cta = { el: "a", href: "#", aria: "polite" };
 
       switch (user.state) {
         case USER_STATES.LOGGED_OUT:
-          cta.class = btnClass + " primary";
-          cta.content = "<strong>Login to Save</strong>";
+          cta.class = "primary white--text";
+          cta.content = "Login to Save";
           cta.href = user.links ? user.links.login : "#";
           break;
         case USER_STATES.SIGNED_IN_NO_CARD:
-          cta.class = btnClass + " primary";
-          cta.content = "<strong>Add Card to Save</strong>";
+          cta.class = "primary white--text";
+          cta.content = "Add Card to Save";
           cta.href = user.links ? user.links.login : "#";
           break;
         case USER_STATES.SIGNED_IN_WITH_CARD:
-          cta.class = "primary";
-          cta.content = this.model.status ? "Start the Savings" : "Load to Card";
+          cta.class = "primary white--text";
+          cta.content = this.model.status ? "Start Saving" : "Load to Card";
           cta.href = "#";
           break;
         default:
@@ -140,33 +157,35 @@ export default {
       const cta = { href: "#" };
 
       switch (this.$route.meta.scope) {
-        case "redeemed":
-          cta.content = "<strong>Redeemed</strong>";
+        case SCOPES.REDEEMED:
+          cta.content = "Redeemed";
+          cta.class = "cta--muted";
           break;
 
-        case "challenges":
-        case "awardsawaiting":
-        case "unredeemed":
-        case "active":
+        case SCOPES.CHALLENGES:
+        case SCOPES.AWARDS_AWAITING:
+        case SCOPES.UNREDEEMED:
+        case SCOPES.ACTIVE:
           if (this.model.status) {
             const target = parseInt(this.model.status.rewards[0].progress.target);
-            const balance =
-              parseInt(this.model.status.rewards[0].progress.balance) || 0;
+            const balance = parseInt(this.model.status.rewards[0].progress.balance) || 0;
             cta.el = "a";
 
-            if (balance >= 0 && balance < target) {
+            if (balance < target) {
               cta.disabled = true;
               cta.text = true;
               cta.content = "Savings Started";
+              cta.class = "cta--muted";
             } else if (balance === target) {
-              const reward_clip_status = this.model.status.rewards[0].progress.clipped;
-              const achieved_status = this.model.status.rewards[0].progress.achieved;
-              if (achieved_status === "N") {
+              const achieved = this.model.status.rewards[0].progress.achieved;
+              const clipStatus = this.model.status.rewards[0].progress.clipped;
+              if (achieved === "N") {
                 cta.text = true;
                 cta.disabled = true;
                 cta.content = "Awaiting Award";
-              } else if (reward_clip_status === "N") {
-                cta.class = "primary";
+                cta.class = "cta--muted";
+              } else if (clipStatus === "N") {
+                cta.class = "primary white--text";
                 cta.content = "Load to Card";
               }
             }
@@ -175,11 +194,13 @@ export default {
             cta.disabled = true;
             cta.text = true;
             cta.content = "Coupon Loaded";
+            cta.class = "cta--muted";
           }
           break;
 
-        case "expired":
+        case SCOPES.EXPIRED:
           cta.content = "Expired";
+          cta.class = "cta--muted";
           break;
 
         default:
@@ -189,8 +210,7 @@ export default {
     },
 
     getExpirationText() {
-      const expiration_date = this.model.display_end_date;
-      return "Available Until: " + expiration_date;
+      return "Available until " + this.model.display_end_date;
     },
 
     onButtonClicked() {
@@ -205,8 +225,8 @@ export default {
       this.clip({
         data: { id: that.model.coupon_id },
         model: this.model,
-        success(response) {
-          that.removeFromScope(that.model);
+        success() {
+          that.removeFromScope();
         },
         error(response, json) {
           that.error = (json.messages && json.messages[0]) || json.message || "An error occurred.";
@@ -233,13 +253,11 @@ export default {
     removeFromScope() {
       if (this.scope === SCOPES.BROWSE) {
         const copy = this.model.status ? "Savings Started" : "Loaded to Card";
-
-        this.cta.class = "black--text";
+        this.cta.class = "cta--muted";
         this.cta.text = true;
         this.cta.disabled = true;
-        this.cta.content = `<span class="cta_muted">${copy}</span>`;
+        this.cta.content = copy;
 
-        // Remove from browse, add to active
         const idx = this.options.coupons.browse.indexOf(this.model);
         if (idx !== -1) {
           this.options.coupons.browse.splice(idx, 1);
@@ -247,7 +265,7 @@ export default {
         this.options.coupons.active.unshift(this.model);
       } else {
         this.cta.el = "a";
-        this.cta.class = "black--text";
+        this.cta.class = "cta--muted";
         this.cta.text = true;
         this.cta.disabled = true;
         this.cta.content = "Coupon Loaded";
@@ -259,59 +277,160 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.coupon-col {
+  display: flex;
+  padding: 8px;
+}
+
+// Card shell
+.coupon-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md) !important;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm) !important;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  overflow: hidden;
+
+  &:hover {
+    box-shadow: var(--shadow-hover) !important;
+    transform: translateY(-2px);
+  }
+}
+
+// Image area — fixed height, neutral background
+.coupon-card__image {
+  background: var(--color-border-light);
+  border-bottom: 1px solid var(--color-border);
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Body — grows to fill card, pushes CTA to bottom
+.coupon-card__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 12px 14px 8px;
+}
+
+.coupon-card__title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--color-text);
+  margin: 0 0 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.coupon-card__desc {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  line-height: 1.45;
+  margin: 0 0 auto;
+  padding-bottom: 8px;
+}
+
+.coupon-card__expires {
+  font-size: 0.6875rem;
+  color: var(--color-text-light);
+  margin: 6px 0 0;
+  letter-spacing: 0.01em;
+}
+
+// CTA area
+.coupon-card__actions {
+  padding: 0 12px 14px !important;
+}
+
+.coupon-card__cta {
+  height: 36px !important;
+  font-size: 0.8125rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em !important;
+}
+
+.coupon-card__cta-label {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  padding: 8px 0;
+}
+
+.cta--muted {
+  color: var(--color-text-muted) !important;
+}
+
+// Progress indicator
+.reward-progress {
+  margin: 0 0 8px;
+}
+
+.progress-met {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-success);
+  padding: 4px 0;
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+  margin-bottom: 4px;
+}
+
+.progress-pips {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.pip {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--color-border);
+  display: inline-block;
+  transition: background 0.15s;
+}
+
+.pip--filled {
+  background: var(--color-success);
+}
+
+// Screen reader only
 .screen-reader-only {
-  position: fixed;
+  position: absolute;
   left: -9999px;
   width: 1px;
   height: 1px;
-  top: auto;
-}
-.v-card__title {
-  font-size: 0.9em;
-  line-height: 1.5;
-  word-break: break-word;
-}
-.v-card__actions .v-btn {
-  font-size: 0.7em;
-  font-weight: bold;
 }
 
-/* Progress Bar */
-.reward-progress {
-  margin: 1em auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+// Error dialog
+.error-dialog__title {
+  font-size: 1rem !important;
+  font-weight: 600;
+  padding: 16px 20px 8px !important;
 }
-.content-text {
-  width: 90%;
-  margin: 0 auto 0.5em;
-  display: flex;
-  justify-content: space-between;
+
+.error-dialog__body {
+  padding: 0 20px 16px !important;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
 }
-.content-circle {
-  width: 90%;
-  margin: 0 auto;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-.content-circle .circle {
-  background: #ccc;
-  border-radius: 50%;
-  height: 15px;
-  width: 15px;
-  margin: 0 2% 4%;
-}
-.content-circle .circle.active {
-  background: #2fa86e;
-}
-.hidden {
-  visibility: hidden;
-}
-.reward-progress .criteria-met {
-  color: #2fa86e;
-  text-align: center;
+
+.error-dialog__actions {
+  padding: 0 20px 16px !important;
 }
 </style>

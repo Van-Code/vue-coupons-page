@@ -1,9 +1,9 @@
 import Vue from 'vue';
-//common modules
 import myApp from '@/App.vue';
 import router from '@/router';
 import vuetify from '@/plugins/vuetify';
 import { store } from '@/store';
+import '@/assets/styles/globals.scss';
 
 new Vue({
 	el: '.app',

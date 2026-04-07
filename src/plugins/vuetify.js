@@ -5,16 +5,23 @@ Vue.use(Vuetify);
 
 export default new Vuetify({
 	icons: {
-		iconfont: 'mdiSvg' // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4' || 'faSvg'
+		iconfont: 'mdiSvg'
 	},
 	theme: {
 		themes: {
 			light: {
-				primary: '#ed1b2e',
-				secondary: '#b0bec5',
-				accent: '#8c9eff',
-				error: '#b71c1c'
+				primary:   '#E63946',
+				secondary: '#1D3557',
+				accent:    '#A8DADC',
+				success:   '#2D6A4F',
+				error:     '#B91C1C',
+				warning:   '#D97706',
+				info:      '#457B9D',
+				anchor:    '#1D3557'
 			}
+		},
+		options: {
+			customProperties: true // enables CSS custom property generation for theme colors
 		}
 	}
 });

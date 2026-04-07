@@ -1,17 +1,19 @@
 <template>
-  <div ref="coupons_list">
+  <div class="coupon-grid" ref="coupons_list">
     <coupon-item
+      v-for="(cpn, i) in coupons"
+      :key="`${scope}-${cpn.coupon_id}-${i}`"
       :options="options"
       :coupons="coupons"
       :model="cpn"
-      v-for="(cpn,i) in coupons"
-      :key="`${$route.meta.scope}${i}`"
       ref="cpn"
     ></coupon-item>
   </div>
 </template>
+
 <script>
-import CouponItem from '@/views/components/CouponItem';
+import CouponItem from "@/views/components/CouponItem";
+
 export default {
   props: {
     options: { type: Object, required: true },
@@ -19,9 +21,18 @@ export default {
   },
   components: { CouponItem },
   computed: {
-    scope: function() {
+    scope() {
       return this.$route.meta.scope;
     }
   }
 };
 </script>
+
+<style scoped lang="scss">
+.coupon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 16px;
+  padding: 4px 0;
+}
+</style>
