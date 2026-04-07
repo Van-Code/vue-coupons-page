@@ -1,5 +1,5 @@
 <template>
-  <div class="coupon-col col col-xs-6 col-sm-4 col-md-3" :data-id="model.coupon_id">
+  <div class="coupon-col col col-xs-6 col-md-3" :data-id="model.coupon_id">
     <v-card class="coupon-card" elevation="0">
       <!-- Product Image -->
       <div class="coupon-card__image">
@@ -48,8 +48,9 @@
           :text="cta.text"
           :href="cta.href"
           :class="['coupon-card__cta', cta.class]"
-          :disabled="cta.disabled"
-          v-html="cta.content"
+          :disabled="cta.disabled || isClipping"
+          :loading="isClipping"
+          v-html="isClipping ? '' : cta.content"
           @click.prevent="onButtonClicked"
         ></v-btn>
         <span v-else :class="['coupon-card__cta-label', cta.class]" v-html="cta.content"></span>
@@ -108,6 +109,7 @@ export default {
       expirationText: this.getExpirationText(),
       imgSrc: this.model.image_uri,
       cta: this.getCta(),
+      isClipping: false,
       dialog: false,
       error: ""
     };
@@ -221,14 +223,19 @@ export default {
     },
 
     clipCoupon() {
+      this.isClipping = true;
       const that = this;
       this.clip({
         data: { id: that.model.coupon_id },
         model: this.model,
         success() {
+          that.isClipping = false;
           that.removeFromScope();
+          const msg = that.model.status ? "Savings started!" : "Coupon loaded to your card.";
+          that.$store.commit("notify", { message: msg, color: "success" });
         },
         error(response, json) {
+          that.isClipping = false;
           that.error = (json.messages && json.messages[0]) || json.message || "An error occurred.";
           that.dialog = true;
         }

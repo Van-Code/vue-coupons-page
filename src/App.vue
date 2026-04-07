@@ -1,10 +1,22 @@
 <template>
   <div>
     <v-app class="my-app container">
+      <!-- Loading -->
       <div v-if="isLoading" class="app-loading">
         <v-progress-circular indeterminate color="primary" size="48" width="3" />
         <span>Loading offers&hellip;</span>
       </div>
+
+      <!-- Fetch error -->
+      <div v-else-if="hasError" class="app-error">
+        <p class="app-error__icon">⚠</p>
+        <p class="app-error__message">Unable to load offers. Please try again.</p>
+        <v-btn depressed color="primary" class="white--text" @click="retry">
+          Retry
+        </v-btn>
+      </div>
+
+      <!-- App -->
       <app-shell v-else :options="options"></app-shell>
     </v-app>
   </div>
@@ -23,12 +35,9 @@ export default {
   mixins: [UserMixins],
   data() {
     return {
-      options: {
-        coupons: {},
-        tabs: {},
-        filters: {}
-      },
-      isLoading: true
+      options: { coupons: {}, tabs: {}, filters: {} },
+      isLoading: true,
+      hasError: false
     };
   },
   computed: {
@@ -47,6 +56,12 @@ export default {
     });
   },
   methods: {
+    retry() {
+      this.hasError = false;
+      this.isLoading = true;
+      this.startProgram();
+    },
+
     startProgram() {
       const program = {};
       this.buildTabs(program);
@@ -74,6 +89,10 @@ export default {
         .then(() => this.createFilterIds(scopes, program))
         .then(() => {
           this.isLoading = false;
+        })
+        .catch(() => {
+          this.isLoading = false;
+          this.hasError = true;
         });
     },
 
@@ -112,9 +131,9 @@ export default {
     },
 
     initCouponCollection(program) {
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         Object.assign(program.coupons, Coupons);
-        this.fetchCoupons(program).then(resolve);
+        this.fetchCoupons(program).then(resolve).catch(reject);
       });
     },
 
@@ -132,9 +151,7 @@ export default {
                   cpn.status.clipped === "Y" &&
                   cpn.status.rewards[0].fully_redeemed === "N"
               );
-              if (active.length > 0) {
-                program.coupons[SCOPES.ACTIVE] = active;
-              }
+              if (active.length > 0) program.coupons[SCOPES.ACTIVE] = active;
 
               const redeemed = collection.filter(
                 (cpn) =>
@@ -143,9 +160,7 @@ export default {
                     cpn.status.clipped === "Y" &&
                     cpn.status.rewards[0].fully_redeemed === "Y")
               );
-              if (redeemed.length > 0) {
-                program.coupons[SCOPES.REDEEMED] = redeemed;
-              }
+              if (redeemed.length > 0) program.coupons[SCOPES.REDEEMED] = redeemed;
 
               this.getHistoryCollections(program, program.coupons[SCOPES.ACTIVE]);
             }
@@ -159,47 +174,49 @@ export default {
     },
 
     getHistoryCollections(program, collection) {
-      const challenge_started = collection.filter((cpn) => {
-        if (!cpn.status) return false;
-        const reward = cpn.status.rewards[0];
-        return reward.progress.balance < reward.progress.target;
-      });
-      if (challenge_started.length > 0) {
-        program.coupons[SCOPES.CHALLENGES].push(challenge_started[0]);
-      }
+      const push = (key, items) => {
+        if (items.length > 0) program.coupons[key].push(items[0]);
+      };
 
-      const awardsawaiting = collection.filter((cpn) => {
-        if (!cpn.status) return false;
-        const reward = cpn.status.rewards[0];
-        return (
-          reward.progress.clipped === "N" &&
-          cpn.status.clipped === "Y" &&
-          reward.progress.balance === reward.progress.target &&
-          reward.progress.balance != 0 &&
-          reward.coupon_id === ""
-        );
-      });
-      if (awardsawaiting.length > 0) {
-        program.coupons[SCOPES.AWARDS_AWAITING].push(awardsawaiting[0]);
-      }
-
-      const expired = collection.filter(
-        (cpn) => new Date() > new Date(cpn.display_end_date)
+      push(
+        SCOPES.CHALLENGES,
+        collection.filter((cpn) => {
+          if (!cpn.status) return false;
+          const r = cpn.status.rewards[0];
+          return r.progress.balance < r.progress.target;
+        })
       );
-      if (expired.length > 0) {
-        program.coupons[SCOPES.EXPIRED].push(expired[0]);
-      }
 
-      const unredeemed = collection.filter((cpn) => {
-        if (!cpn.status) return false;
-        return (
-          cpn.status.rewards[0].coupon_id !== "" &&
-          cpn.status.rewards[0].progress.clipped === "N"
-        );
-      });
-      if (unredeemed.length > 0) {
-        program.coupons[SCOPES.UNREDEEMED].push(unredeemed[0]);
-      }
+      push(
+        SCOPES.AWARDS_AWAITING,
+        collection.filter((cpn) => {
+          if (!cpn.status) return false;
+          const r = cpn.status.rewards[0];
+          return (
+            r.progress.clipped === "N" &&
+            cpn.status.clipped === "Y" &&
+            r.progress.balance === r.progress.target &&
+            r.progress.balance != 0 &&
+            r.coupon_id === ""
+          );
+        })
+      );
+
+      push(
+        SCOPES.EXPIRED,
+        collection.filter((cpn) => new Date() > new Date(cpn.display_end_date))
+      );
+
+      push(
+        SCOPES.UNREDEEMED,
+        collection.filter((cpn) => {
+          if (!cpn.status) return false;
+          return (
+            cpn.status.rewards[0].coupon_id !== "" &&
+            cpn.status.rewards[0].progress.clipped === "N"
+          );
+        })
+      );
     },
 
     createFilterIds(scopes, program) {
@@ -226,3 +243,27 @@ export default {
   }
 };
 </script>
+
+<style lang="scss">
+.app-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 12px;
+  text-align: center;
+}
+
+.app-error__icon {
+  font-size: 2.5rem;
+  margin: 0;
+  opacity: 0.5;
+}
+
+.app-error__message {
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  margin: 0 0 8px;
+}
+</style>

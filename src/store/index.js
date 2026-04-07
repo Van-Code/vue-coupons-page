@@ -10,6 +10,11 @@ export const store = new Vuex.Store({
 				state: 0,
 				checked: false
 			}
+		},
+		notification: {
+			show: false,
+			message: '',
+			color: 'success'
 		}
 	},
 	mutations: {
@@ -18,6 +23,12 @@ export const store = new Vuex.Store({
 		},
 		userState(state, payload) {
 			state.app.user.state = payload.state;
+		},
+		notify(state, { message, color = 'success' }) {
+			state.notification = { show: true, message, color };
+		},
+		clearNotification(state) {
+			state.notification.show = false;
 		}
 	},
 	getters: {
