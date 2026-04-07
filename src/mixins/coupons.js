@@ -1,40 +1,37 @@
 import axios from 'axios';
+
 export const couponMixin = {
 	methods: {
 		getUrl: function() {
-			return './json/true.json?';
+			return './json/true.json';
 		},
 		clip: function(options) {
-			var that = this;
 			options = options || {};
-			options.url = this.getUrl() + 'clip';
+			options.url = this.getUrl();
 			axios
-				.get(options.url, { params: options.data })
+				.get(options.url, { params: { action: 'clip', id: options.data.id } })
 				.then((response) => {
-					const result = response.data.result;
-					if (result) {
+					if (response.data.result) {
 						options.success(options.model);
 					} else {
 						options.error(options.model, response.data);
 					}
 				})
-				.catch((error) => console.log(error));
+				.catch((error) => console.error('Clip error:', error));
 		},
 		unclip: function(options) {
-			var that = this;
 			options = options || {};
-			options.url = this.getUrl() + 'unclip';
+			options.url = this.getUrl();
 			axios
-				.get(options.url, { params: options.data })
+				.get(options.url, { params: { action: 'unclip', id: options.data.id } })
 				.then((response) => {
-					const result = response.data.result;
-					if (result) {
+					if (response.data.result) {
 						options.success();
 					} else {
 						options.error(options.model, response.data);
 					}
 				})
-				.catch((error) => console.log(error));
+				.catch((error) => console.error('Unclip error:', error));
 		}
 	}
 };

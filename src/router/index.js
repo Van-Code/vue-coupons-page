@@ -8,85 +8,54 @@ const routes = [
 	{
 		path: '/',
 		component: AppHome,
-		default: true,
-		meta: {
-			title: 'Home',
-			type: 'home',
-			scope: 'browse'
-		},
+		meta: { title: 'All Offers', scope: 'browse' },
 		name: 'home'
-	},
-	{
-		path: '/myredeemed',
-		component: AppHome,
-		meta: {
-			title: 'Home',
-			type: 'home',
-			scope: 'redeemed'
-		}
 	},
 	{
 		path: '/myactive',
 		component: AppHome,
-		meta: {
-			title: 'Home',
-			type: 'home',
-			scope: 'active'
-		}
+		meta: { title: 'My Offers', scope: 'active' }
 	},
 	{
 		path: '/myredeemed',
 		component: AppHome,
-		meta: {
-			title: 'Home',
-			type: 'home',
-			scope: 'redeemed'
-		}
+		meta: { title: 'My History', scope: 'redeemed' }
 	},
 	{
 		path: '/mychallenges',
 		component: AppHome,
-		meta: {
-			title: 'Home',
-			type: 'home',
-			scope: 'challenges'
-		}
+		meta: { title: 'Challenge Started', scope: 'challenges' }
 	},
 	{
 		path: '/myawardsawaiting',
 		component: AppHome,
-		meta: {
-			title: 'Home',
-			type: 'home',
-			scope: 'awardsawaiting'
-		}
+		meta: { title: 'Award Awaiting', scope: 'awardsawaiting' }
+	},
+	{
+		path: '/myexpired',
+		component: AppHome,
+		meta: { title: 'Expired', scope: 'expired' }
 	},
 	{
 		path: '/myunredeemed',
 		component: AppHome,
-		meta: {
-			title: 'Home',
-			type: 'home',
-			scope: 'unredeemed'
-		}
+		meta: { title: 'Unredeemed Reward', scope: 'unredeemed' }
 	},
 	{
 		path: '*',
 		redirect: '/'
 	}
 ];
+
 const router = new VueRouter({
 	routes,
 	scrollBehavior(to, from, savedPosition) {
 		if (savedPosition) {
-			return new Promise((resolve, reject) => {
-				setTimeout(() => {
-					resolve(savedPosition);
-				}, 100);
+			return new Promise((resolve) => {
+				setTimeout(() => resolve(savedPosition), 100);
 			});
-		} else {
-			return { x: 0, y: 0 };
 		}
+		return { x: 0, y: 0 };
 	}
 });
 

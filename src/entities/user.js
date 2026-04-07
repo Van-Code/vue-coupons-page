@@ -1,4 +1,5 @@
 import axios from 'axios';
+
 export const UserMixins = {
 	data() {
 		return {
@@ -16,35 +17,37 @@ export const UserMixins = {
 		this.getLinks();
 	},
 	methods: {
-		userCheck: function(options) {
-			var that = this;
-			return new Promise(function(resolve, reject) {
-				that.url = 'public/json/user.json?';
-				if (that.$store.state.app.urlParam.loggedOut) {
-					that.url = 'public/json/user2.json?';
-				}
+		userCheck: function() {
+			const that = this;
+			return new Promise(function(resolve) {
+				// Use loggedOut param to simulate a logged-out user for demo purposes
+				that.url = that.$store.state.app.urlParam.loggedOut
+					? 'public/json/user2.json'
+					: 'public/json/user.json';
+
 				axios.get(that.url).then((response) => {
-					let data = response.data.user;
+					const data = response.data.user;
 					Object.assign(data, {
 						checked: true,
 						now: new Date(data.now)
 					});
-					if (data && data.user_status === 'notSignedIn') {
+
+					if (data.user_status === 'notSignedIn') {
 						data.state = 0;
 					} else if (data.user_status === 'signedIn' && data.card !== '') {
 						data.state = 2;
 					} else {
 						data.state = 1;
 					}
-					that.user = data;
 
+					that.user = data;
 					that.$store.commit('userData', that.user);
 					resolve();
 				});
 			});
 		},
 		logIn: function() {
-			var that = this;
+			const that = this;
 			axios
 				.get(that.authUrl, {
 					params: {
@@ -53,7 +56,7 @@ export const UserMixins = {
 				})
 				.then((data) => {
 					if (data.responseText) {
-						console.log('There was an error');
+						console.error('Login error');
 					} else {
 						that.state = 2;
 						location.reload();
@@ -61,8 +64,12 @@ export const UserMixins = {
 				});
 		},
 		getLinks: function() {
-			var links = {
-				login: window.location.origin + '/login?targetPath=' + window.location.pathname + window.location.search
+			const links = {
+				login:
+					window.location.origin +
+					'/login?targetPath=' +
+					window.location.pathname +
+					window.location.search
 			};
 			this.$store.commit('userData', { links: links });
 		}

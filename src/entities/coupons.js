@@ -1,5 +1,5 @@
 import axios from 'axios';
-import _ from 'lodash';
+import { uniqBy } from 'lodash';
 
 export const Coupons = {
 	methods: {
@@ -7,11 +7,9 @@ export const Coupons = {
 			return './json/data.json';
 		},
 		fetch: function(opts) {
-			let that = this;
 			axios
 				.get(this.url())
 				.then((response) => {
-					console.log(response);
 					if (response.data.result) {
 						let coupons = response.data.coupons;
 						coupons.forEach((cpn) => {
@@ -20,14 +18,15 @@ export const Coupons = {
 									Object.assign(cpn, { status: cs });
 								}
 							});
-							that.parse(cpn);
 						});
-						opts.success(_.uniqBy(coupons, 'coupon_id'));
+						opts.success(uniqBy(coupons, 'coupon_id'));
 					} else {
 						opts.error(response.data.message);
 					}
 				})
-				.catch((response) => {});
+				.catch((err) => {
+					opts.error(err);
+				});
 		},
 		sortOpts: [
 			{ id: 'Expiration', selected: false },
@@ -35,22 +34,6 @@ export const Coupons = {
 			{ id: 'Most_Recent', selected: false },
 			{ id: 'Category', selected: false }
 		],
-		sortKey: 'Expiration',
-		sort_lists: {},
-		parse: function(data) {
-			// set most recent to default sort key
-			this.sortOpts.filter((x) => {
-				if (x.selected === true) {
-					x.selected = false;
-				}
-			});
-			this.sortOpts.filter((x) => {
-				if (x.id === 'Most_Recent') {
-					x.selected = true;
-				}
-			});
-
-			return data.coupons;
-		}
+		sortKey: 'Most_Recent'
 	}
 };
