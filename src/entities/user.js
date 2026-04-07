@@ -20,8 +20,8 @@ export const UserMixins = {
 				// Use ?loggedOut query param to simulate a logged-out user for demo
 				const params = new URLSearchParams(window.location.search);
 				const url = params.get('loggedOut')
-					? 'public/json/user2.json'
-					: 'public/json/user.json';
+					? 'json/user2.json'
+					: 'json/user.json';
 
 				axios.get(url).then((response) => {
 					const data = response.data.user;
