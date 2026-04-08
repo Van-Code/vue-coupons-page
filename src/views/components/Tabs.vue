@@ -1,12 +1,16 @@
 <template>
   <div class="tab-bar">
     <!-- Desktop: Vuetify tabs -->
-    <v-tabs v-if="$vuetify.breakpoint.mdAndUp" background-color="transparent" height="48">
+    <v-tabs
+      v-if="$vuetify.breakpoint.mdAndUp"
+      background-color="transparent"
+      height="44"
+      :slider-size="2"
+    >
       <v-tab
         v-for="(tab, i) in options.tabs"
         :key="i"
         :to="tab.link === 'browse' ? '/' : `/${tab.link}`"
-        :class="{ 'v-tab--active': scope === tab.scope }"
         exact
       >
         {{ tab.name }}
@@ -73,13 +77,14 @@ export default {
 
 .tab-select {
   width: 100%;
-  padding: 8px 12px;
+  padding: var(--space-2) var(--space-3);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  font-size: 0.875rem;
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
   font-weight: 600;
   color: var(--color-text);
   background: var(--color-surface);
+  font-family: var(--font-sans);
   appearance: menulist;
 
   &:focus {

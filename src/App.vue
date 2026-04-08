@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-app class="my-app container">
+    <v-app>
       <!-- Loading -->
       <div v-if="isLoading" class="app-loading">
         <v-progress-circular indeterminate color="primary" size="48" width="3" />

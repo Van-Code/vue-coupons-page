@@ -1,43 +1,18 @@
 <template>
   <div class="sort-bar">
-    <label class="sort-bar__label" for="sort-select">Sort</label>
-    <v-select
+    <span class="sort-bar__label">Sort</span>
+    <select
       id="sort-select"
-      v-model="sortModel"
-      :items="sortOptItems"
-      item-text="label"
-      item-value="value"
-      dense
-      outlined
-      hide-details
       class="sort-bar__select"
-      @change="emitSortValue"
-    ></v-select>
-
-    <div class="sort-bar__search" v-if="!isMobile">
-      <v-autocomplete
-        v-model="searchBox"
-        placeholder="Search offers…"
-        :items="autocompleteList"
-        :search-input.sync="search"
-        hide-no-data
-        hide-selected
-        hide-details
-        dense
-        outlined
-        clearable
-        class="sort-bar__autocomplete"
-        append-icon=""
-      />
-      <v-btn
-        depressed
-        color="primary"
-        class="white--text sort-bar__search-btn"
-        @click.prevent="emitFilter"
-      >
-        Search
-      </v-btn>
-    </div>
+      v-model="sortModel"
+      @change="emitSortValue(sortModel)"
+    >
+      <option
+        v-for="opt in sortOptItems"
+        :key="opt.value"
+        :value="opt.value"
+      >{{ opt.label }}</option>
+    </select>
   </div>
 </template>
 
@@ -65,41 +40,22 @@ export default {
           SORT_OPTIONS.CATEGORY
         ];
 
-    // Build autocomplete list once from initial coupon set
-    const autocomplete = [];
-    this.coupons.forEach((cpn) => {
-      ["category", "brand"].forEach((type) => {
-        if (cpn[type] && !autocomplete.includes(cpn[type])) {
-          autocomplete.push(cpn[type]);
-        }
-      });
-    });
-
     return {
-      sortOpts: opts,
-      sortModel: opts[0],
-      autocompleteList: autocomplete,
-      search: null,
-      searchBox: null
+      sortOpts:  opts,
+      sortModel: opts[0]
     };
   },
   computed: {
-    isMobile() {
-      return this.$vuetify.breakpoint.smAndDown;
-    },
     sortOptItems() {
       return this.sortOpts.map((key) => ({
         value: key,
-        label: key.replace("_", " ")
+        label: key.replace(/_/g, " ")
       }));
     }
   },
   methods: {
     emitSortValue(value) {
       this.$emit("updateSort", value);
-    },
-    emitFilter() {
-      this.$emit("updateFilters", this.searchBox);
     }
   }
 };
@@ -107,37 +63,52 @@ export default {
 
 <style scoped lang="scss">
 .sort-bar {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0 var(--space-3) 0 var(--space-4);
+  height: 36px;
 }
 
 .sort-bar__label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-size: var(--text-sm);
+  font-weight: 600;
   color: var(--color-text-muted);
   white-space: nowrap;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  user-select: none;
+}
+
+// Divider between label and select
+.sort-bar__label::after {
+  content: '';
+  display: inline-block;
+  width: 1px;
+  height: 14px;
+  background: var(--color-border);
+  margin-left: var(--space-2);
+  vertical-align: middle;
 }
 
 .sort-bar__select {
-  width: 160px;
-  flex-shrink: 0;
-}
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  cursor: pointer;
+  padding: 0;
+  appearance: auto; // keep native arrow for clarity
+  min-width: 120px;
 
-.sort-bar__search {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.sort-bar__autocomplete {
-  width: 200px;
-}
-
-.sort-bar__search-btn {
-  height: 40px !important;
-  font-size: 0.8125rem !important;
+  &:focus {
+    outline: none;
+  }
 }
 </style>

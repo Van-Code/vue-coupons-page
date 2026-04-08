@@ -62,7 +62,7 @@ export default {
 
 <style scoped lang="scss">
 .filter-section {
-  padding: 16px 0;
+  padding: var(--space-4) 0;
   border-bottom: 1px solid var(--color-border);
 
   &:last-child {

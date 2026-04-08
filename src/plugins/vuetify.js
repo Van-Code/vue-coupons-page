@@ -1,27 +1,27 @@
 import Vue from 'vue';
-import Vuetify from 'vuetify/lib';
+import Vuetify from 'vuetify';
 
 Vue.use(Vuetify);
 
 export default new Vuetify({
 	icons: {
-		iconfont: 'mdiSvg'
+		iconfont: 'mdi'
 	},
 	theme: {
 		themes: {
 			light: {
-				primary:   '#E63946',
-				secondary: '#1D3557',
-				accent:    '#A8DADC',
-				success:   '#2D6A4F',
-				error:     '#B91C1C',
-				warning:   '#D97706',
-				info:      '#457B9D',
-				anchor:    '#1D3557'
+				primary:   '#2563EB', // electric blue — clean, premium CTA colour
+				secondary: '#0F172A', // near-black slate — used for nav / headings
+				accent:    '#F59E0B', // amber — savings highlights
+				success:   '#059669', // emerald — clipped / progress
+				error:     '#DC2626', // red
+				warning:   '#D97706', // amber-600
+				info:      '#0EA5E9', // sky
+				anchor:    '#2563EB'
 			}
 		},
 		options: {
-			customProperties: true // enables CSS custom property generation for theme colors
+			customProperties: true
 		}
 	}
 });

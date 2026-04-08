@@ -12,5 +12,14 @@ module.exports = {
 			return args;
 		});
 	},
-	productionSourceMap: false
+	productionSourceMap: false,
+	css: {
+		loaderOptions: {
+			scss: {
+				sassOptions: {
+					silenceDeprecations: ['import', 'global-builtin', 'color-functions', 'mixed-decls']
+				}
+			}
+		}
+	}
 };

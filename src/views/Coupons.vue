@@ -255,7 +255,7 @@ export default {
 
 <style scoped lang="scss">
 .coupons-page {
-  padding-top: 8px;
+  padding-top: var(--space-2);
 }
 
 // ── Toolbar ──────────────────────────────────────────────────────────────────
@@ -322,9 +322,9 @@ export default {
 // ── Main layout ───────────────────────────────────────────────────────────────
 .coupons-layout {
   display: flex;
-  gap: 24px;
+  gap: var(--space-8);
   align-items: flex-start;
-  padding-top: 16px;
+  padding-top: var(--space-4);
 }
 
 .coupons-layout__sidebar {
