@@ -22,14 +22,14 @@ A Vue 2 digital coupon clipping app with category filtering, sort, and a simulat
 
 ## Tech Stack
 
-| Tool | Version | Role |
-|---|---|---|
-| [Vue 2](https://v2.vuejs.org/) | 2.6 | Component framework |
-| [Vuex 3](https://v3.vuex.vuejs.org/) | 3.1 | Global state (user, notifications) |
-| [Vue Router 3](https://v3.router.vuejs.org/) | 3.1 | Client-side routing with scope meta |
-| [Vuetify 2](https://v2.vuetifyjs.com/) | 2.6 | Material Design UI components + breakpoints |
-| [Axios](https://axios-http.com/) | 0.21 | HTTP requests |
-| [Lodash](https://lodash.com/) | 4.17 | Sort and collection utilities |
+| Tool                                         | Version | Role                                        |
+| -------------------------------------------- | ------- | ------------------------------------------- |
+| [Vue 2](https://v2.vuejs.org/)               | 2.6     | Component framework                         |
+| [Vuex 3](https://v3.vuex.vuejs.org/)         | 3.1     | Global state (user, notifications)          |
+| [Vue Router 3](https://v3.router.vuejs.org/) | 3.1     | Client-side routing with scope meta         |
+| [Vuetify 2](https://v2.vuetifyjs.com/)       | 2.7     | Material Design UI components + breakpoints |
+| [Axios](https://axios-http.com/)             | 0.21    | HTTP requests                               |
+| [Lodash](https://lodash.com/)                | 4.17    | Sort and collection utilities               |
 
 ---
 
@@ -37,7 +37,7 @@ A Vue 2 digital coupon clipping app with category filtering, sort, and a simulat
 
 ### Prerequisites
 
-- Node.js ≥ 14
+- Node.js ≥ 4
 - npm ≥ 6
 
 ### Install
@@ -54,7 +54,7 @@ npm install
 npm run serve
 ```
 
-Open [http://localhost:8080/coupons/dist](http://localhost:8080/coupons/dist) in your browser.
+Open [http://localhost:8080/](http://localhost:8080/coupons/) in your browser.
 
 > **Logged-in demo:** The app defaults to a signed-in user with a loyalty card. To simulate a logged-out state, append `?loggedOut=true` to the URL.
 
@@ -62,10 +62,10 @@ Open [http://localhost:8080/coupons/dist](http://localhost:8080/coupons/dist) in
 
 ## Scripts
 
-| Script | Description |
-|---|---|
+| Script          | Description                      |
+| --------------- | -------------------------------- |
 | `npm run serve` | Start dev server with hot reload |
-| `npm run build` | Production build to `dist/` |
+| `npm run build` | Production build to `dist/`      |
 
 ---
 
@@ -122,27 +122,28 @@ Coupon collections are keyed by **scope** — a string constant that maps both t
 
 ### Scope system
 
-| Constant | Route | Shown to |
-|---|---|---|
-| `SCOPES.BROWSE` | `/` | All users |
-| `SCOPES.ACTIVE` | `/myactive` | Logged in |
-| `SCOPES.REDEEMED` | `/myredeemed` | Logged in |
-| `SCOPES.CHALLENGES` | `/mychallenges` | Logged in |
+| Constant                 | Route               | Shown to  |
+| ------------------------ | ------------------- | --------- |
+| `SCOPES.BROWSE`          | `/`                 | All users |
+| `SCOPES.ACTIVE`          | `/myactive`         | Logged in |
+| `SCOPES.REDEEMED`        | `/myredeemed`       | Logged in |
+| `SCOPES.CHALLENGES`      | `/mychallenges`     | Logged in |
 | `SCOPES.AWARDS_AWAITING` | `/myawardsawaiting` | Logged in |
-| `SCOPES.EXPIRED` | `/myexpired` | Logged in |
-| `SCOPES.UNREDEEMED` | `/myunredeemed` | Logged in |
+| `SCOPES.EXPIRED`         | `/myexpired`        | Logged in |
+| `SCOPES.UNREDEEMED`      | `/myunredeemed`     | Logged in |
 
 ### Authentication
 
 User state is resolved in `entities/user.js` via `userCheck()`, which reads from local JSON fixtures. Three states are defined as named constants:
 
-| Constant | Value | Meaning |
-|---|---|---|
-| `USER_STATES.LOGGED_OUT` | `0` | Not signed in — shows "Login to Save" CTA |
-| `USER_STATES.SIGNED_IN_NO_CARD` | `1` | Signed in, no loyalty card — shows "Add Card to Save" |
-| `USER_STATES.SIGNED_IN_WITH_CARD` | `2` | Full access — can clip coupons |
+| Constant                          | Value | Meaning                                               |
+| --------------------------------- | ----- | ----------------------------------------------------- |
+| `USER_STATES.LOGGED_OUT`          | `0`   | Not signed in — shows "Login to Save" CTA             |
+| `USER_STATES.SIGNED_IN_NO_CARD`   | `1`   | Signed in, no loyalty card — shows "Add Card to Save" |
+| `USER_STATES.SIGNED_IN_WITH_CARD` | `2`   | Full access — can clip coupons                        |
 
 **Demo fixtures:**
+
 - `public/json/user.json` — signed-in user with a card on file
 - `public/json/user2.json` — logged-out state (use `?loggedOut=true`)
 
